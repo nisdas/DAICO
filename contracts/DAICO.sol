@@ -20,7 +20,12 @@ contract DAICO is Crowdsale {
 
   //Tap Rate at which developers can withdraw funds(wei/sec)
   uint256 public tap;
+  uint256 public TotalVotes;
   bool public ongoingProposal;
+  mapping (address => bool) VoteCast;
+
+  event TapRaise(address,uint256,uint256,string);
+  event Destruct();
 
 
   modifier onlyWhileOpen {
@@ -85,22 +90,27 @@ contract DAICO is Crowdsale {
    
   }
 
-  function _setProposal(bytes32 choice) {
-      require(choice == "raise" || choice == "destruct");
+  function _setRaiseProposal() {
+      require(ongoingProposal == false);
       ongoingProposal = true;
-      if (choice == "destruct") {
-          _returnFunds();
-       
-      } else {
-          _raiseTap();
-
-      }
-      
-
+      TapRaise(msg.sender,block.timestamp,block.timestamp.add(1209600),"Vote To Raise Tap");   
 
   }
 
-  function _startVoting() internal {
+  function _setDestructProposal() {
+      require(ongoingProposal == false);
+      ongoingProposal = true;
+      TapRaise(msg.sender,block.timestamp,block.timestamp.add(1209600),"Vote To destruct DAICO and return funds");
+
+  }
+
+  function _CastVote() internal {
+      require(ongoingProposal == true);
+      require(token.balanceOf(msg.sender) > 0);
+      require(VoteCast[msg.sender] == false);
+      VoteCast[msg.sender] == true;
+      TotalVotes += 1;
+
 
   }
   function _returnFunds() internal {
