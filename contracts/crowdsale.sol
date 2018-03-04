@@ -55,7 +55,6 @@ contract Crowdsale {
 
     _updatePurchasingState(_beneficiary, weiAmount);
 
-    _forwardFunds();
     _postValidatePurchase(_beneficiary, weiAmount);
   }
 
@@ -91,7 +90,4 @@ contract Crowdsale {
   }
 
 
-  function _forwardFunds() internal {
-    wallet.transfer(msg.value);
-  }
 }
