@@ -20,7 +20,12 @@ contract DAICO is Crowdsale {
 
   //Tap Rate at which developers can withdraw funds(wei/sec)
   uint256 public tap;
-  uint256 public TotalVotes;
+  uint256 public TotalYesVotes;
+  uint256 public TotalNoVotes;
+  uint256 public startVoting;
+  uint256 public endVoting;
+
+  bytes32 public proposal;
   bool public ongoingProposal;
   mapping (address => bool) VoteCast;
 
@@ -83,7 +88,7 @@ contract DAICO is Crowdsale {
 
   }
 
-  function _OwnerModifyTap(uint256 _tap) onlyOwner {
+  function _ownerModifyTap(uint256 _tap) onlyOwner {
       require(TapSet > 0);
       require(tap > _tap);
       tap = _tap;
@@ -93,25 +98,45 @@ contract DAICO is Crowdsale {
   function _setRaiseProposal() {
       require(ongoingProposal == false);
       ongoingProposal = true;
-      TapRaise(msg.sender,block.timestamp,block.timestamp.add(1209600),"Vote To Raise Tap");   
+      startVoting = block.timestamp;
+      endVoting = startVoting.add(1209600);
+      proposal = "Raise";
+      TapRaise(msg.sender,startVoting,endVoting,"Vote To Raise Tap");   
 
   }
 
   function _setDestructProposal() {
       require(ongoingProposal == false);
       ongoingProposal = true;
-      TapRaise(msg.sender,block.timestamp,block.timestamp.add(1209600),"Vote To destruct DAICO and return funds");
+      startVoting = block.timestamp;
+      endVoting = startVoting.add(1209600);
+      proposal = "Destruct";
+      TapRaise(msg.sender,startVoting,endVoting,"Vote To destruct DAICO and return funds");  
 
   }
 
-  function _CastVote() internal {
+  function _castYesVote() internal {
       require(ongoingProposal == true);
+      require(endVoting > block.timestamp);
       require(token.balanceOf(msg.sender) > 0);
       require(VoteCast[msg.sender] == false);
       VoteCast[msg.sender] == true;
-      TotalVotes += 1;
+      TotalYesVotes.add(1);
 
+  }
+  function _castNoVote() internal {
+      require(ongoingProposal == true);
+      require(endVoting > block.timestamp);
+      require(token.balanceOf(msg.sender) > 0);
+      require(VoteCast[msg.sender] == false);
+      VoteCast[msg.sender] == true;
+      TotalNoVotes.add(1);
 
+  }
+
+  function _voteTallying() public {
+      require(ongoingProposal == true);
+      require(endVoting > block.timestamp);
   }
   function _returnFunds() internal {
      
