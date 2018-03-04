@@ -20,14 +20,18 @@ contract DAICO is Crowdsale {
 
   //Tap Rate at which developers can withdraw funds(wei/sec)
   uint256 public tap;
+  uint256 public tempTap;
   uint256 public TotalYesVotes;
   uint256 public TotalNoVotes;
   uint256 public startVoting;
   uint256 public endVoting;
+  uint256 public proposalNumber;
 
   bytes32 public proposal;
   bool public ongoingProposal;
-  mapping (address => bool) VoteCast;
+  bool public investorWithdraw;
+  mapping (address => bool) withdrawn;
+  mapping (uint256 => mapping(address => bool)) VoteCast;
 
   event TapRaise(address,uint256,uint256,string);
   event Destruct();
@@ -51,6 +55,11 @@ contract DAICO is Crowdsale {
 
   modifier onlyOwner {
       require(msg.sender == wallet);
+      _;
+  }
+
+  modifier contractIsinactive {
+      require(investorWithdraw);
       _;
   }
 
@@ -102,68 +111,91 @@ contract DAICO is Crowdsale {
   }
 //TODO: do not allow proposals while crowdsale is still running 
 
+//TODO: Add relevant asserts for diff proposals
+
 // Proposal to raise Tap 
-  function _setRaiseProposal() {
-      require(ongoingProposal == false);
+  function _setRaiseProposal(uint256 _tap) public {
+      require(!ongoingProposal);
       ongoingProposal = true;
       startVoting = block.timestamp;
       endVoting = startVoting.add(1209600);
       proposal = "Raise";
+      proposalNumber.add(1);
+      tempTap = _tap;
       TapRaise(msg.sender,startVoting,endVoting,"Vote To Raise Tap");   
 
   }
 
 // Proposal to destroy the DAICO
-  function _setDestructProposal() {
-      require(ongoingProposal == false);
+  function _setDestructProposal() public {
+      require(!ongoingProposal);
       ongoingProposal = true;
       startVoting = block.timestamp;
       endVoting = startVoting.add(1209600);
       proposal = "Destruct";
+      proposalNumber.add(1);
       TapRaise(msg.sender,startVoting,endVoting,"Vote To destruct DAICO and return funds");  
 
   }
 
 // Casting a Yes Vote for Voting
-  function _castYesVote() internal {
-      require(ongoingProposal == true);
+  function _castYesVote() public {
+      require(ongoingProposal);
       require(endVoting > block.timestamp);
       require(token.balanceOf(msg.sender) > 0);
-      require(VoteCast[msg.sender] == false);
-      VoteCast[msg.sender] == true;
+      require(VoteCast[proposalNumber][msg.sender] == false);
+      VoteCast[proposalNumber][msg.sender] == true;
       TotalYesVotes.add(1);
 
   }
 
 // Casting a No Vote  
-  function _castNoVote() internal {
-      require(ongoingProposal == true);
+  function _castNoVote() public {
+      require(ongoingProposal);
       require(endVoting > block.timestamp);
       require(token.balanceOf(msg.sender) > 0);
-      require(VoteCast[msg.sender] == false);
-      VoteCast[msg.sender] == true;
+      require(VoteCast[proposalNumber][msg.sender] == false);
+      VoteCast[proposalNumber][msg.sender] == true;
       TotalNoVotes.add(1);
 
   }
 
 // Tallying all the votes to take a decision
   function _voteTallying() public {
-      require(ongoingProposal == true);
+      
+      require(ongoingProposal);
       require(endVoting < block.timestamp);
       if (proposal == "Raise") {
           if (TotalYesVotes > TotalNoVotes) {
-                require(TapSet > 0);
-                require(tap > _tap);
-                tap = _tap;
+             _raiseTap(tempTap);
 
+          } else {
+              tempTap = 0;
+              ongoingProposal = false;
           }
+
+      } else {
+         if (TotalYesVotes > TotalNoVotes) {
+             tap = 0;
+             investorWithdraw = true;
+
+          } else {
+             ongoingProposal = false; 
+          } 
 
       }
   }
-  function _returnFunds() internal {
+  function _returnFunds() public contractIsinactive {
+      require(!withdrawn[msg.sender]);
+      withdrawn[msg.sender] = true;
+      uint256 amount = (this.balance.mul(token.balanceOf(msg.sender))).div(token.totalSupply());
+      msg.sender.transfer(amount);
+      
      
   }
-  function _raiseTap() internal {
+  function _raiseTap(uint256 _tap) internal {
+      tap = _tap;
+      ongoingProposal = false; 
 
   }
   
