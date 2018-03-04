@@ -1,0 +1,11 @@
+An implementation of DAICO
+
+features
+
+Adding a Tap State Variable : wei/sec 
+Adding a new Tap Rate(modify_tap)
+Voting On resolutions , Ex:
+- Whether to Raise the Tap
+- whether to self-destruct the contract
+Owner can lower tap voluntarily 
+Replace ETH with DAI token for stability with USD
