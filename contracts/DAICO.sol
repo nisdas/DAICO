@@ -85,9 +85,28 @@ contract DAICO is Crowdsale {
    
   }
 
-  function _setProposal() {
+  function _setProposal(bytes32 choice) {
+      require(choice == "raise" || choice == "destruct");
       ongoingProposal = true;
+      if (choice == "destruct") {
+          _returnFunds();
+       
+      } else {
+          _raiseTap();
+
+      }
       
+
+
+  }
+
+  function _startVoting() internal {
+
+  }
+  function _returnFunds() internal {
+     
+  }
+  function _raiseTap() internal {
 
   }
   
