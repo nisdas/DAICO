@@ -113,6 +113,10 @@ contract DAICO is Crowdsale {
 
 //TODO: Add relevant asserts for diff proposals
 
+//TODO: Shift Voting Proposals to different Contract to make this contract cleaner 
+
+//Find a Different Way to destruct the DAICO
+
 // Proposal to raise Tap 
   function _setRaiseProposal(uint256 _tap) public {
       require(!ongoingProposal);
