@@ -120,6 +120,7 @@ contract DAICO is Crowdsale {
 // Proposal to raise Tap 
   function _setRaiseProposal(uint256 _tap) public {
       require(!ongoingProposal);
+      require(token.balanceOf(msg.sender) > 0);
       ongoingProposal = true;
       startVoting = block.timestamp;
       endVoting = startVoting.add(1209600);
@@ -133,6 +134,7 @@ contract DAICO is Crowdsale {
 // Proposal to destroy the DAICO
   function _setDestructProposal() public {
       require(!ongoingProposal);
+      require(token.balanceOf(msg.sender) > 0);
       ongoingProposal = true;
       startVoting = block.timestamp;
       endVoting = startVoting.add(1209600);
