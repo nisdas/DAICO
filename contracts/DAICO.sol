@@ -20,6 +20,7 @@ contract DAICO is Crowdsale {
 
   //Tap Rate at which developers can withdraw funds(wei/sec)
   uint256 public tap;
+  bool public ongoingProposal;
 
 
   modifier onlyWhileOpen {
@@ -36,6 +37,11 @@ contract DAICO is Crowdsale {
   modifier onlyWhileClosed {
       require(now >= closingTime);
       _;   
+  }
+
+  modifier onlyOwner {
+      require(msg.sender == wallet);
+      _;
   }
 
 
@@ -60,17 +66,31 @@ contract DAICO is Crowdsale {
     return now > closingTime;
   }
 
-  function _setTap() internal onlyWhileClosed setTap {
+  function _setTap() onlyOwner onlyWhileClosed setTap {
       tap = this.balance.div(tapPeriod);
   }
 
-  function _withdraw() internal onlyWhileClosed {
+  function _withdraw() onlyOwner onlyWhileClosed {
       require(TapSet > 0);
       uint256 amount = tap.mul(block.timestamp.sub(lastWithdrawn));
       lastWithdrawn = block.timestamp;
       wallet.transfer(amount);
 
   }
+
+  function _OwnerModifyTap(uint256 _tap) onlyOwner {
+      require(TapSet > 0);
+      require(tap > _tap);
+      tap = _tap;
+   
+  }
+
+  function _setProposal() {
+      ongoingProposal = true;
+      
+
+  }
+  
 
   
 
