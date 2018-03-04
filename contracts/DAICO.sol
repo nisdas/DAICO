@@ -11,6 +11,7 @@ contract DAICO is Crowdsale {
   uint256 public openingTime;
   uint256 public closingTime;
   uint256 public TapSet;
+  uint256 public lastWithdrawn;
 
   /* The length the funds are held in the contract till the full amount is 
      ditributed to the team(in seconds)
@@ -31,7 +32,7 @@ contract DAICO is Crowdsale {
    _;
    TapSet += 1;
   }
-  
+
   modifier onlyWhileClosed {
       require(now >= closingTime);
       _;   
@@ -44,24 +45,34 @@ contract DAICO is Crowdsale {
     require(_tapPeriod >= 2);
 
     tapPeriod = _tapPeriod * 365 * 24 * 60 * 60;
+    lastWithdrawn = _closingTime;
     openingTime = _openingTime;
     closingTime = _closingTime;
 
-  }
-
-
-  function _hasClosed() public view returns (bool) {
-    return now > closingTime;
-  }
-
-  function _setTap() internal onlyWhileClosed {
-      tap = this.balance / tapPeriod ;
   }
 
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
     super._preValidatePurchase(_beneficiary, _weiAmount);
     
   }
+
+  function _hasClosed() public view returns (bool) {
+    return now > closingTime;
+  }
+
+  function _setTap() internal onlyWhileClosed setTap {
+      tap = this.balance / tapPeriod;
+  }
+
+  function _withdraw() internal onlyWhileClosed {
+      require(TapSet > 0);
+      uint256 amount = tap * (block.timestamp - lastWithdrawn);
+      lastWithdrawn = block.timestamp;
+      wallet.transfer(amount);
+
+  }
+
+
 
 }
 
