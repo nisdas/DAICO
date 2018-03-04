@@ -54,6 +54,9 @@ contract DAICO is Crowdsale {
       _;
   }
 
+//TODO : Add a modifier function for during and after voting to make code cleaner  
+
+// Setting Up Constructor Function
 
   function DAICO(uint256 _openingTime, uint256 _closingTime, uint256 _tapPeriod) public {
     require(_openingTime >= now);
@@ -76,10 +79,12 @@ contract DAICO is Crowdsale {
     return now > closingTime;
   }
 
+// Setting the Tap
   function _setTap() onlyOwner onlyWhileClosed setTap {
       tap = this.balance.div(tapPeriod);
   }
 
+// The withdraw function for the devs
   function _withdraw() onlyOwner onlyWhileClosed {
       require(TapSet > 0);
       uint256 amount = tap.mul(block.timestamp.sub(lastWithdrawn));
@@ -88,13 +93,16 @@ contract DAICO is Crowdsale {
 
   }
 
+// Allow Owner to Modify Tap
   function _ownerModifyTap(uint256 _tap) onlyOwner {
       require(TapSet > 0);
       require(tap > _tap);
       tap = _tap;
    
   }
+//TODO: do not allow proposals while crowdsale is still running 
 
+// Proposal to raise Tap 
   function _setRaiseProposal() {
       require(ongoingProposal == false);
       ongoingProposal = true;
@@ -105,6 +113,7 @@ contract DAICO is Crowdsale {
 
   }
 
+// Proposal to destroy the DAICO
   function _setDestructProposal() {
       require(ongoingProposal == false);
       ongoingProposal = true;
@@ -115,6 +124,7 @@ contract DAICO is Crowdsale {
 
   }
 
+// Casting a Yes Vote for Voting
   function _castYesVote() internal {
       require(ongoingProposal == true);
       require(endVoting > block.timestamp);
@@ -124,6 +134,8 @@ contract DAICO is Crowdsale {
       TotalYesVotes.add(1);
 
   }
+
+// Casting a No Vote  
   function _castNoVote() internal {
       require(ongoingProposal == true);
       require(endVoting > block.timestamp);
@@ -134,9 +146,19 @@ contract DAICO is Crowdsale {
 
   }
 
+// Tallying all the votes to take a decision
   function _voteTallying() public {
       require(ongoingProposal == true);
-      require(endVoting > block.timestamp);
+      require(endVoting < block.timestamp);
+      if (proposal == "Raise") {
+          if (TotalYesVotes > TotalNoVotes) {
+                require(TapSet > 0);
+                require(tap > _tap);
+                tap = _tap;
+
+          }
+
+      }
   }
   function _returnFunds() internal {
      
