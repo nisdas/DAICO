@@ -1,15 +1,14 @@
 pragma solidity ^0.4.18;
 
-import "./Crowdsale/crowdsale.sol";
+import "./Crowdsale/TimedCrowdsale.sol";
 import "./Math/SafeMath.sol";
 
-contract DAICO is Crowdsale {
+contract DAICO is TimedCrowdsale {
 
 
   using SafeMath for uint256;
 
-  uint256 public openingTime;
-  uint256 public closingTime;
+
   uint256 public TapSet;
   uint256 public lastWithdrawn;
 
@@ -37,10 +36,6 @@ contract DAICO is Crowdsale {
   event Destruct();
 
 
-  modifier onlyWhileOpen {
-    require(now >= openingTime && now <= closingTime);
-    _;
-  }
 
   modifier setTap {
    require(TapSet == 0);
@@ -67,26 +62,13 @@ contract DAICO is Crowdsale {
 
 // Setting Up Constructor Function
 
-  function DAICO(uint256 _openingTime, uint256 _closingTime, uint256 _tapPeriod) public {
-    require(_openingTime >= now);
-    require(_closingTime >= _openingTime);
+  function DAICO(uint256 _tapPeriod) public {
     require(_tapPeriod >= 2);
 
     tapPeriod = _tapPeriod.mul(31536000);
-    lastWithdrawn = _closingTime;
-    openingTime = _openingTime;
-    closingTime = _closingTime;
-
+    lastWithdrawn = closingTime;
   }
 
-  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
-    super._preValidatePurchase(_beneficiary, _weiAmount);
-    
-  }
-
-  function _hasClosed() public view returns (bool) {
-    return now > closingTime;
-  }
 
 // Setting the Tap
   function _setTap() onlyOwner onlyWhileClosed setTap {
