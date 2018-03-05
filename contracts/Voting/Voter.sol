@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 import "./VoterInterface.sol";
-import "./proposal.sol";
+import "../Proposal/proposal.sol";
 
 contract Voter is VoterInterface , proposal {
 

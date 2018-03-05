@@ -1,6 +1,6 @@
  pragma solidity ^0.4.18;
 
-  import "./Token/Token.sol";
+  import "../Token/Token.sol";
 
   contract InterfaceProposal {
 

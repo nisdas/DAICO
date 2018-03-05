@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "./Crowdsale/TimedCrowdsale.sol";
 import "./Math/SafeMath.sol";
-import "./Voter.sol";
+import "./Voting/Voter.sol";
 
 contract DAICO is TimedCrowdsale, Voter {
 

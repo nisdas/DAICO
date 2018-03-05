@@ -1,8 +1,8 @@
   pragma solidity ^0.4.18;
 
-  import "./Token/Token.sol";
+  import "../Token/Token.sol";
   import "./InterfaceProposal.sol";
-  import "./Math/SafeMath.sol";
+  import "../Math/SafeMath.sol";
 
   contract proposal is InterfaceProposal {
 
