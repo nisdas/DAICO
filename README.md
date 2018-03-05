@@ -6,7 +6,7 @@ More details regarding it can be found here : https://ethresear.ch/t/explanation
 
 A basic implemenation that is based on the post by Vitalik, regarding Decentralized Autonomous Initial Coin Offerings
 
-This implementation is built ontop of the open zeppelin smart contract library. All the relevant code can be found in `./contracts/DAICO.sol` 
+This implementation is built on top of the open zeppelin smart contract library. All the relevant code can be found in `./contracts/DAICO.sol` 
 
 Included in implementation :
 
