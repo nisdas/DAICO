@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "./Token.sol";
-import "./SafeMath.sol";
+import "../Token/Token.sol";
+import "../Math/SafeMath.sol";
 
 
 

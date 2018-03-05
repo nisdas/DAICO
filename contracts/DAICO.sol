@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "./crowdsale.sol";
-import "./SafeMath.sol";
+import "./Crowdsale/crowdsale.sol";
+import "./Math/SafeMath.sol";
 
 contract DAICO is Crowdsale {
 
