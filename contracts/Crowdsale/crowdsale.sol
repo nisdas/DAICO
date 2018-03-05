@@ -14,6 +14,8 @@ import "../Math/SafeMath.sol";
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override 
  * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
+ * 
+ * Implementation Author : Nishant Das 
  */
 
 contract Crowdsale {

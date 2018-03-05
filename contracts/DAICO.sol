@@ -52,7 +52,20 @@ contract DAICO is TimedCrowdsale {
       require(msg.sender == wallet);
       _;
   }
+  modifier noCurrentProposal {
+      require(!ongoingProposal);
+      require(token.balanceOf(msg.sender) > 0);
+      _;
+  }
   modifier currentProposal {
+      require(ongoingProposal);
+      require(endVoting > block.timestamp);
+      _;
+  }
+
+  modifier isValidTokenHolder {
+      require(token.balanceOf(msg.sender) > 0);
+      require(VoteCast[proposalNumber][msg.sender] == false);
       _;
   }
 
@@ -60,6 +73,7 @@ contract DAICO is TimedCrowdsale {
       require(investorWithdraw);
       _;
   }
+  
 
 //TODO : Add a modifier function for during and after voting to make code cleaner  
 
@@ -103,49 +117,33 @@ contract DAICO is TimedCrowdsale {
 //TODO: Find a Different Way to destruct the DAICO
 
 // Proposal to raise Tap 
-  function _setRaiseProposal(uint256 _tap) public {
-      require(!ongoingProposal);
-      require(token.balanceOf(msg.sender) > 0);
-      ongoingProposal = true;
-      startVoting = block.timestamp;
-      endVoting = startVoting.add(1209600);
-      proposal = "Raise";
-      proposalNumber.add(1);
+  function _setRaiseProposal(uint256 _tap) public noCurrentProposal {
+
+      _startProposal("Raise");
       tempTap = _tap;
       TapRaise(msg.sender,startVoting,endVoting,"Vote To Raise Tap");   
 
   }
 
 // Proposal to destroy the DAICO
-  function _setDestructProposal() public {
-      require(!ongoingProposal);
-      require(token.balanceOf(msg.sender) > 0);
-      ongoingProposal = true;
-      startVoting = block.timestamp;
-      endVoting = startVoting.add(1209600);
-      proposal = "Destruct";
-      proposalNumber.add(1);
+  function _setDestructProposal() public noCurrentProposal {
+      
+      _startProposal("Destruct");
       TapRaise(msg.sender,startVoting,endVoting,"Vote To destruct DAICO and return funds");  
 
   }
 
 // Casting a Yes Vote for Voting
-  function _castYesVote() public {
-      require(ongoingProposal);
-      require(endVoting > block.timestamp);
-      require(token.balanceOf(msg.sender) > 0);
-      require(VoteCast[proposalNumber][msg.sender] == false);
+  function _castYesVote() public currentProposal isValidTokenHolder {
+ 
       VoteCast[proposalNumber][msg.sender] == true;
       TotalYesVotes.add(1);
 
   }
 
 // Casting a No Vote  
-  function _castNoVote() public {
-      require(ongoingProposal);
-      require(endVoting > block.timestamp);
-      require(token.balanceOf(msg.sender) > 0);
-      require(VoteCast[proposalNumber][msg.sender] == false);
+  function _castNoVote() public currentProposal isValidTokenHolder {
+
       VoteCast[proposalNumber][msg.sender] == true;
       TotalNoVotes.add(1);
 
@@ -184,6 +182,16 @@ contract DAICO is TimedCrowdsale {
       
      
   }
+
+  function _startProposal(bytes32 _proposal) internal {
+      ongoingProposal = true;
+      startVoting = block.timestamp;
+      endVoting = startVoting.add(1209600);
+      proposalNumber.add(1);
+      proposal = _proposal;
+
+  }
+
   function _raiseTap(uint256 _tap) internal {
       tap = _tap;
       ongoingProposal = false; 

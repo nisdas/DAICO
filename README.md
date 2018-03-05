@@ -4,8 +4,8 @@
 
 More details regarding it can be found here : https://ethresear.ch/t/explanation-of-daicos/465
 
-A basic implemenation that is based on the above post by Vitalik, regarding using DAOs to mitigate moral hazard 
-when managers of ICOs do not act in the interest of their investors
+A basic implemenation that is based on the above post by Vitalik, regarding using DAOs to mitigate the principal agent problem
+so that managers act in the best interest of their investors
 
 This implementation is built on top of the open zeppelin smart contract library. All the relevant code can be found in `./contracts/DAICO.sol` 
 
