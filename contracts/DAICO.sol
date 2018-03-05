@@ -33,7 +33,7 @@ contract DAICO is TimedCrowdsale {
   mapping (uint256 => mapping(address => bool)) VoteCast;
 
   event TapRaise(address,uint256,uint256,string);
-  event Destruct();
+  event Destruct(address,uint256,uint256,string);
 
 
 
@@ -108,7 +108,6 @@ contract DAICO is TimedCrowdsale {
       tap = _tap;
    
   }
-//TODO: do not allow proposals while crowdsale is still running 
 
 //TODO: Add relevant asserts for diff proposals
 
@@ -116,22 +115,6 @@ contract DAICO is TimedCrowdsale {
 
 //TODO: Find a Different Way to destruct the DAICO
 
-// Proposal to raise Tap 
-  function _setRaiseProposal(uint256 _tap) public noCurrentProposal {
-
-      _startProposal("Raise");
-      tempTap = _tap;
-      TapRaise(msg.sender,startVoting,endVoting,"Vote To Raise Tap");   
-
-  }
-
-// Proposal to destroy the DAICO
-  function _setDestructProposal() public noCurrentProposal {
-      
-      _startProposal("Destruct");
-      TapRaise(msg.sender,startVoting,endVoting,"Vote To destruct DAICO and return funds");  
-
-  }
 
 // Casting a Yes Vote for Voting
   function _castYesVote() public currentProposal isValidTokenHolder {
