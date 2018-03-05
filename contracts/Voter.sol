@@ -7,7 +7,12 @@ contract Voter is VoterInterface {
 
     proposal public proposalInst;
 
-    function _Vote(bool _vote) internal {
+    modifier alreadyVoted {
+        require(!VoteCast[proposalInst.proposalNumber][msg.sender]);
+        _;
+    }
+
+    function _Vote(bool _vote) internal alreadyVoted {
 
         VoteCast[proposalInst.proposalNumber][msg.sender] = true;
 
