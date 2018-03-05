@@ -52,6 +52,9 @@ contract DAICO is TimedCrowdsale {
       require(msg.sender == wallet);
       _;
   }
+  modifier currentProposal {
+      _;
+  }
 
   modifier contractIsinactive {
       require(investorWithdraw);
