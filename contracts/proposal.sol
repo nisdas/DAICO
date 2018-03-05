@@ -2,29 +2,11 @@
 
   import "./Token/Token.sol";
   import "./InterfaceProposal.sol";
+  import "./Math/SafeMath.sol";
 
-  contract proposal is InterfacePropsal {
+  contract proposal is InterfaceProposal {
 
-  Token public token;    
-
-  uint256 public proposalNumber;    
-  bytes32 public proposal;
-  bool public ongoingProposal;
-  bool public investorWithdraw;
-  mapping (uint256 => proposals) registry;
-
-  event TapRaise(address,uint256,uint256,string);
-  event Destruct(address,uint256,uint256,string);
-  
-
-  struct proposals {
-
-   address proposalSetter;
-   uint256 votingStart;
-   uint256 votingEnd;
-   bytes32 proposalType;
-
-  }
+  using SafeMath for uint256;
 
   modifier noCurrentProposal {
       require(!ongoingProposal);
@@ -37,27 +19,27 @@
       _;
   }
 // Proposal to raise Tap 
-  function _setRaiseProposal(uint256 _tap) public noCurrentProposal  {
+  function _setRaiseProposal(uint256 _tap) public noCurrentProposal {
 
       _startProposal("Raise");
-      tempTap = _tap;
-      TapRaise(msg.sender,startVoting,endVoting,"Vote To Raise Tap");   
+      //tempTap = _tap;
+      TapRaise(msg.sender, registry[proposalNumber].votingStart, registry[proposalNumber].votingEnd,"Vote To Raise Tap");   
 
   }
 
 // Proposal to destroy the DAICO
-  function _setDestructProposal() public noCurrentProposal  {
+  function _setDestructProposal() public noCurrentProposal {
 
       _startProposal("Destruct");
-      Destruct(msg.sender,startVoting,endVoting,"Vote To destruct DAICO and return funds");  
+      Destruct(msg.sender, registry[proposalNumber].votingStart, registry[proposalNumber].votingEnd,"Vote To destruct DAICO and return funds");  
 
   }
 
    function _startProposal(bytes32 _proposal) internal {
       ongoingProposal = true;
-      startVoting = block.timestamp;
-      endVoting = startVoting.add(1209600);
       proposalNumber.add(1);
+      registry[proposalNumber].votingStart = block.timestamp;
+      registry[proposalNumber].votingEnd = block.timestamp.add(1209600);
       proposal = _proposal;
 
   }
