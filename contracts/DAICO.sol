@@ -76,7 +76,7 @@ contract DAICO is TimedCrowdsale, Voter {
 // The withdraw function for the devs
   function _withdraw() public onlyOwner onlyWhileClosed {
 
-      require(TapSet = 1);
+      require(TapSet == 1);
       uint256 amount = tap.mul(block.timestamp.sub(lastWithdrawn));
       lastWithdrawn = block.timestamp;
       wallet.transfer(amount);
@@ -85,7 +85,7 @@ contract DAICO is TimedCrowdsale, Voter {
 
 // Allow Owner to Modify Tap
   function _ownerModifyTap(uint256 _tap) public onlyOwner {
-      require(TapSet = 1);
+      require(TapSet == 1);
       require(tap > _tap);
       tap = _tap;
    
@@ -93,24 +93,44 @@ contract DAICO is TimedCrowdsale, Voter {
 
 //TODO: Add relevant asserts for diff proposals
 
-//TODO: Shift Voting Proposals to different Contract to make this contract cleaner 
-
 //TODO: Find a Different Way to destruct the DAICO
 
 
 // Casting a Vote for Voting(True for agree and False for Disagree)
+function _SetRaiseProposal(uint256 _tap) public {
+    _setRaiseProposal();
+    tempTap = _tap;
+}
+function _SetDestructProposal() public {
+    _setDestructProposal();
+}
 
-function _ProposalVote(bool _vote) public {
+function _ProposalVote(bool _vote) public currentProposal isValidTokenHolder {
 
-    require(proposalInst.ongoingProposal);
-    require(token.balanceOf(msg.sender) > 0);
     _Vote(_vote);
 
 }
 // Tallying all the votes to take a decision
 
 function _tallyingVotes() public {
+    require(now > registry[proposalNumber].votingEnd);
+    bool result = _tallyVotes();
+    _afterVoteAction(result);
 
+}
+
+function _afterVoteAction(bool result ) internal {
+    if(result && proposal == "Raise") {
+          _raiseTap(tempTap);
+          ongoingProposal == false;
+
+    } else if (result && proposal == "Destruct") {
+        investorWithdraw = true;
+        ongoingProposal == false;
+
+    } else {
+        ongoingProposal == false;
+    }
 } 
 
 
@@ -125,14 +145,7 @@ function _tallyingVotes() public {
      
   }
 
-  function _startProposal(bytes32 _proposal) internal {
-      ongoingProposal = true;
-      startVoting = block.timestamp;
-      endVoting = startVoting.add(1209600);
-      proposalNumber.add(1);
-      proposal = _proposal;
 
-  }
 
   function _raiseTap(uint256 _tap) internal {
       tap = _tap;

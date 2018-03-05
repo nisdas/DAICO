@@ -26,10 +26,10 @@
   }
 
 // Proposal to raise Tap 
-  function _setRaiseProposal(uint256 _tap) public;
+  function _setRaiseProposal() internal;
 
 // Proposal to destroy the DAICO
-  function _setDestructProposal() public;
+  function _setDestructProposal() internal;
 
    function _startProposal(bytes32 _proposal) internal;
 

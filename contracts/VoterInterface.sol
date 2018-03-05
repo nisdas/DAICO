@@ -9,7 +9,7 @@ contract VoterInterface {
   mapping (uint256 => mapping(address => bool)) VoteCast;
 
   function _Vote(bool _vote) internal;
-  function _tallyVotes() internal;
+  function _tallyVotes() internal returns (bool);
 
 
 

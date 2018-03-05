@@ -3,18 +3,17 @@ pragma solidity ^0.4.18;
 import "./VoterInterface.sol";
 import "./proposal.sol";
 
-contract Voter is VoterInterface {
+contract Voter is VoterInterface , proposal {
 
-    proposal public proposalInst;
 
     modifier alreadyVoted {
-        require(!VoteCast[proposalInst.proposalNumber][msg.sender]);
+        require(!VoteCast[proposalNumber][msg.sender]);
         _;
     }
 
     function _Vote(bool _vote) internal alreadyVoted {
 
-        VoteCast[proposalInst.proposalNumber][msg.sender] = true;
+        VoteCast[proposalNumber][msg.sender] = true;
 
         if (_vote) {
 

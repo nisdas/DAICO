@@ -19,7 +19,7 @@
       _;
   }
 // Proposal to raise Tap 
-  function _setRaiseProposal(uint256 _tap) public noCurrentProposal {
+  function _setRaiseProposal() internal noCurrentProposal {
 
       _startProposal("Raise");
       //tempTap = _tap;
@@ -28,7 +28,7 @@
   }
 
 // Proposal to destroy the DAICO
-  function _setDestructProposal() public noCurrentProposal {
+  function _setDestructProposal() internal noCurrentProposal {
 
       _startProposal("Destruct");
       Destruct(msg.sender, registry[proposalNumber].votingStart, registry[proposalNumber].votingEnd,"Vote To destruct DAICO and return funds");  
